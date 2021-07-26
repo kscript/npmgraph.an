@@ -1,5 +1,5 @@
 module.exports = require('an').controller(navbarController);
-var registryUrl = require('../config.js').autoCompleteUrl;
+var requestWrapper = require('../request.js');
 
 function navbarController($scope, $http, $routeParams, $location, $q) {
   $scope.formatPkg = function (model) {
@@ -44,10 +44,12 @@ function navbarController($scope, $http, $routeParams, $location, $q) {
         }
       }]);
     }
-    return $http.get(registryUrl, {
-      params: {
-        text: JSON.stringify(val)
-      }
+    return requestWrapper('autoCompleteUrl', function (url) {
+      return $http.get(url, {
+        params: {
+          text: JSON.stringify(val)
+        }
+      })
     }).then(function(res){
       var packages = [];
       angular.forEach(res.data.objects, function(pkg){

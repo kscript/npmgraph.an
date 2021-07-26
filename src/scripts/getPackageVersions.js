@@ -1,6 +1,6 @@
 var cache = Object.create(null);
 var npa = require('npm-package-arg');
-var registryUrl = require('./config.js').registryUrl;
+var requestWrapper = require('./request.js');
 
 module.exports = getPackageVersions;
 
@@ -14,8 +14,11 @@ function getPackageVersions(http, q, packageName) {
   if (!escapedName) {
     throw new Error('Could not escape ' + packageName);
   }
-
-  return http.get(registryUrl + escapedName).then(function(response) {
+  
+  return requestWrapper('registryUrl', function(url) {
+    return http.get(url + escapedName)
+  })
+  .then(function(response) {
     var versions = Object.keys(response.data.versions);
     return versions;
   });
